@@ -61,7 +61,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                 Namodaya Traders
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                Sign in to access your store dashboard
+                Log in to access your store dashboard
               </p>
             </div>
           </CardHeader>
@@ -99,7 +99,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                 className="w-full h-11 text-base font-medium"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Logging in..." : "Log In"}
               </Button>
             </form>
 
