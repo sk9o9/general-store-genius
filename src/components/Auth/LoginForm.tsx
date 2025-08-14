@@ -30,8 +30,8 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (username === VALID_CREDENTIALS.username && password === VALID_CREDENTIALS.password) {
-      localStorage.setItem("storeManager_isAuthenticated", "true");
-      localStorage.setItem("storeManager_user", username);
+      localStorage.setItem("namodayaTraders_isAuthenticated", "true");
+      localStorage.setItem("namodayaTraders_user", username);
       toast({
         title: "Login Successful",
         description: `Welcome back, ${username}!`,
@@ -58,7 +58,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold text-foreground">
-                StoreManager
+                Namodaya Traders
               </CardTitle>
               <p className="text-muted-foreground mt-2">
                 Sign in to access your store dashboard

@@ -27,7 +27,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   return (
     <div className="w-64 bg-card border-r border-border h-screen flex flex-col">
       <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-bold text-foreground">StoreManager</h1>
+        <h1 className="text-xl font-bold text-foreground">Namodaya Traders</h1>
         <p className="text-sm text-muted-foreground">General Store System</p>
       </div>
       

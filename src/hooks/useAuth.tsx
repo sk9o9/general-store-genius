@@ -15,8 +15,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Check if user is already logged in
-    const storedAuth = localStorage.getItem("storeManager_isAuthenticated");
-    const storedUser = localStorage.getItem("storeManager_user");
+    const storedAuth = localStorage.getItem("namodayaTraders_isAuthenticated");
+    const storedUser = localStorage.getItem("namodayaTraders_user");
     
     if (storedAuth === "true" && storedUser) {
       setIsAuthenticated(true);
@@ -25,14 +25,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = () => {
-    const storedUser = localStorage.getItem("storeManager_user");
+    const storedUser = localStorage.getItem("namodayaTraders_user");
     setIsAuthenticated(true);
     setUser(storedUser);
   };
 
   const logout = () => {
-    localStorage.removeItem("storeManager_isAuthenticated");
-    localStorage.removeItem("storeManager_user");
+    localStorage.removeItem("namodayaTraders_isAuthenticated");
+    localStorage.removeItem("namodayaTraders_user");
     setIsAuthenticated(false);
     setUser(null);
   };
