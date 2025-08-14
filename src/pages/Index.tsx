@@ -3,16 +3,24 @@ import { Sidebar } from "@/components/Layout/Sidebar";
 import { StatsCards } from "@/components/Dashboard/StatsCards";
 import { ProductTable } from "@/components/Inventory/ProductTable";
 import { InvoiceGenerator } from "@/components/Invoice/InvoiceGenerator";
+import { LoginForm } from "@/components/Auth/LoginForm";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, LogOut, User } from "lucide-react";
 import { mockProducts, mockStats } from "@/data/mockData";
 import { Product } from "@/components/Inventory/ProductTable";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const { toast } = useToast();
+  const { isAuthenticated, user, login, logout } = useAuth();
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={login} />;
+  }
 
   const handleEditProduct = (product: Product) => {
     toast({
@@ -142,6 +150,15 @@ const Index = () => {
     <div className="flex h-screen bg-background">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <main className="flex-1 overflow-auto">
+        <div className="flex justify-between items-center p-6 border-b border-border bg-card">
+          <h1 className="text-xl font-semibold text-foreground">
+            Welcome back, {user}!
+          </h1>
+          <Button variant="outline" onClick={logout} size="sm">
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
         <div className="p-8">
           {renderContent()}
         </div>
