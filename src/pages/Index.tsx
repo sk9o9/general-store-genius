@@ -3,49 +3,60 @@ import { Sidebar } from "@/components/Layout/Sidebar";
 import { StatsCards } from "@/components/Dashboard/StatsCards";
 import { ProductTable } from "@/components/Inventory/ProductTable";
 import { InvoiceGenerator } from "@/components/Invoice/InvoiceGenerator";
-import { LoginForm } from "@/components/Auth/LoginForm";
+import { SupabaseLoginForm } from "@/components/Auth/SupabaseLoginForm";
+import { ProductDialog } from "@/components/Inventory/ProductDialog";
 import { Button } from "@/components/ui/button";
 import { Plus, LogOut, User } from "lucide-react";
-import { mockProducts, mockStats } from "@/data/mockData";
-import { Product } from "@/components/Inventory/ProductTable";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { useProducts, Product } from "@/hooks/useProducts";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
-  const { isAuthenticated, user, login, logout } = useAuth();
+  const { user, isLoading, signOut } = useSupabaseAuth();
+  const { products, isLoading: productsLoading, stats, addProduct, updateProduct, deleteProduct } = useProducts();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show login form if not authenticated
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={login} />;
+  if (!user) {
+    return <SupabaseLoginForm />;
   }
 
   const handleEditProduct = (product: Product) => {
-    toast({
-      title: "Edit Product",
-      description: `Opening edit form for ${product.name}`,
-    });
+    setEditingProduct(product);
+    setIsProductDialogOpen(true);
   };
 
-  const handleDeleteProduct = (productId: string) => {
-    const product = products.find(p => p.id === productId);
-    if (product) {
-      setProducts(products.filter(p => p.id !== productId));
-      toast({
-        title: "Product Deleted",
-        description: `${product.name} has been removed from inventory`,
-        variant: "destructive",
-      });
-    }
+  const handleDeleteProduct = async (productId: string) => {
+    await deleteProduct(productId);
   };
 
   const handleAddProduct = () => {
-    toast({
-      title: "Add Product",
-      description: "Opening new product form",
-    });
+    setEditingProduct(null);
+    setIsProductDialogOpen(true);
+  };
+
+  const handleSaveProduct = async (productData: any) => {
+    if (editingProduct) {
+      await updateProduct(editingProduct.id, productData);
+    } else {
+      await addProduct(productData);
+    }
+    setIsProductDialogOpen(false);
+    setEditingProduct(null);
   };
 
   const renderContent = () => {
@@ -59,7 +70,7 @@ const Index = () => {
                 Overview of your store's inventory and performance
               </p>
             </div>
-            <StatsCards {...mockStats} />
+            <StatsCards {...stats} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-card p-6 rounded-lg border border-border">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">
@@ -152,9 +163,9 @@ const Index = () => {
       <main className="flex-1 overflow-auto">
         <div className="flex justify-between items-center p-6 border-b border-border bg-card">
           <h1 className="text-xl font-semibold text-foreground">
-            Welcome back, {user}!
+            Welcome back, {user.email}!
           </h1>
-          <Button variant="outline" onClick={logout} size="sm">
+          <Button variant="outline" onClick={() => signOut()} size="sm">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
@@ -163,6 +174,16 @@ const Index = () => {
           {renderContent()}
         </div>
       </main>
+
+      <ProductDialog
+        isOpen={isProductDialogOpen}
+        onClose={() => {
+          setIsProductDialogOpen(false);
+          setEditingProduct(null);
+        }}
+        onSave={handleSaveProduct}
+        product={editingProduct}
+      />
     </div>
   );
 };
